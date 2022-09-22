@@ -10,7 +10,8 @@ var mysqlConnection = mysql.createConnection({
     host: 'localhost',
     user: 'root',
     password: 'root',
-    database: 'employeedb'
+    database: 'employeedb',
+    multipleStatements: true
 });
 
 mysqlConnection.connect((err) => {
@@ -36,7 +37,7 @@ app.get("/getemployee/:id", (req, res) => {
     mysqlConnection.query("select * from employee where EmpID = ?", [req.params.id], (err, rows, fields) => {
         if (!err) {
             console.log(rows)
-            // res.send(rows);
+             res.send(rows);
         } else console.log(err);
     })
 });
@@ -49,4 +50,21 @@ app.delete("/deleteemployee/:id", (req, res) => {
         } else console.log(err);
     })
 })
+
+
+
+// add employee
+app.post("/addemployee", (req, res) => {
+    let emp = req.body;
+    var sql = "SET @EmpID = ?; SET @Name = ?; SET @EmpCode = ?; SET @Salary = ?; \
+        CALL EmployeeAddOrEdit (@EmpID, @Name, @EmpCode, @Salary);"
+    mysqlConnection.query(sql, [emp.EmpID, emp.Name, emp.EmpCode, emp.Salary], (err, rows, fields) => {
+        if (!err) {
+            console.log(rows);
+            console.log('Done');
+        } else console.log(err);
+    })
+})
+
+
 
