@@ -22,5 +22,29 @@ module.exports = {
                 return callback(null, results)
             }
         )
+    },
+    getUsers: callback => {
+        pool.query(
+            `select id, firstname, lastname , email , gender, number from registration`,
+            [],
+            (error, results, fields) => {
+                if (error) {
+                    return callback(error)
+                }
+                return callback(null, results);
+            }
+        )
+    },
+    getUserById: (id, callback) => {
+        pool.query(
+            `select id, firstname, lastname , email , gender, number from registration where id= ?`,
+            [id],
+            (error, results, fields) => {
+                if (error) {
+                    return callback(error)
+                }
+                return callback(null, results);
+            }
+        )
     }
 }
