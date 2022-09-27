@@ -1,14 +1,16 @@
+require('dotenv').config();
 const express = require('express');
 
 const app = express();
+const PORT = process.env.PORT || 3000;
 
-app.get('/', (req, res) => {
+app.get('/api', (req, res) => {
     res.json({
         sucess: 1,
         message: 'This rest api is working'
     })
 })
 
-app.listen(3000, () => {
-    console.log('server is up and running');
+app.listen(PORT, () => {
+    console.log(`server is up and running on ${PORT}`);
 })
