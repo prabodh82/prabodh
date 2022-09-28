@@ -46,5 +46,40 @@ module.exports = {
                 return callback(null, results);
             }
         )
+    },
+    updateUser: (id, data, callback) => {
+        pool.query(
+            `update registration set firstname = ?, lastname = ? , email =? , gender = ?, password = ? , number = ? where id= ?`,
+            [
+                data.first_name,
+                data.last_name,
+                data.email,
+                data.gender,
+                data.password,
+                data.number,
+                id
+            ],
+            (error, results, fields) => {
+                if (error) {
+                    return callback(error)
+                }
+                return callback(null, results[0]);
+            }
+        )
+    },
+    delete: (id, callback) => {
+        pool.query(
+            `delete from registration where id = ?`,
+            [
+                id
+            ],
+            (error, results, fields) => {
+                if (error) {
+                    return callback(error);
+                }
+                return callback(null, results[0]);
+            }
+        )
     }
+
 }
