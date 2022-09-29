@@ -1,6 +1,6 @@
-const { hashSync, genSaltSync } = require("bcrypt");
-const { create, getUsers, getUserById, updateUser, delete: deleteUser } = require("./user.service");
-
+const { hashSync, genSaltSync, compareSync } = require("bcrypt");
+const { create, getUsers, getUserById, updateUser, delete: deleteUser, getUserByUserMail } = require("./user.service");
+const { sign } = require("jsonwebtoken");
 module.exports = {
     createUser: (req, res) => {
         const body = req.body;
@@ -60,7 +60,7 @@ module.exports = {
                 console.log(err);
                 return;
             }
-            if(!result){
+            if (!result) {
                 return res.json({
                     success: 0,
                     data: "failed to update user."
@@ -74,7 +74,7 @@ module.exports = {
     },
     deleteUser: (req, res) => {
         const id = req.params.id;
-        deleteUser (id, (err, results) => {
+        deleteUser(id, (err, results) => {
             if (err) {
                 console.log(err);
                 return;
@@ -85,4 +85,34 @@ module.exports = {
             })
         })
     },
+    login: (req, res) => {
+        const body = req.body;
+        getUserByUserMail(body.email, (err, results) => {
+            if (err) {
+                console.log(err);
+                return;
+            }
+            if (!results) {
+                return res.json({
+                    success: 0,
+                    message: "Invalid username or password!"
+                })
+            }
+            const result = compareSync(body.password, results.password);
+            if (result) {
+                results.password = undefined;
+                const jsontoken = sign({ result: results }, process.env.KEY, { expiresIn: '1h' })
+                return res.json({
+                    success: 1,
+                    token: jsontoken,
+                    message: "login successfully"
+                })
+            } else {
+                return res.json({
+                    success: 0,
+                    message: 'Invalid username or password!'
+                })
+            }
+        })
+    }
 }
