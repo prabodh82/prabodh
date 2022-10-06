@@ -1,10 +1,9 @@
 const jwt = require('jsonwebtoken');
 
-export async function isAunthicated(req, res, next) {
+module.exports = async function isAunthicated(req, res, next) {
     // Bearer <token>
-    const token = req.headers('authorization').split(' ')[1];
-
-    jwt.verify(token, 'secret', (err, user) => {
+    const token =  req.headers["authorization"].split(" ")[1];
+    jwt.verify(token, 'secert', (err, user) => {
         if (err) {
             res.json({
                 success: 0,
