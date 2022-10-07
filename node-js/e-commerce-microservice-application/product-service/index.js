@@ -6,6 +6,8 @@ const jwt = require("jsonwebtoken");
 const amqp = require("amqplib");
 const Product = require("./Product");
 const isAuthenticated = require("../isAunthicated");
+// const { json } = require("express");
+// const order = require("../order-service/order");
 app.use(express.json());
 var channel, connection;
 
@@ -28,7 +30,7 @@ async function connect() {
   await channel.assertQueue("PRODUCT");
 }
 
-connect();
+connect()
 // create a new product
 // buy a new product
 
@@ -39,6 +41,7 @@ app.post("/product/create", isAuthenticated, async (req, res) => {
     description,
     price,
   });
+  await newProduct.save();
   return res.json(newProduct);
 });
 
@@ -47,7 +50,7 @@ app.post("/product/create", isAuthenticated, async (req, res) => {
 
 app.post("/product/buy", isAuthenticated, async (req, res) => {
   const { ids } = req.body;
-  const products = await Product.find(_id, { $in: ids });
+  const products = await Product.find({ _id: { $in: ids } });
 
   channel.sendToQueue(
     "ORDER",
@@ -58,6 +61,12 @@ app.post("/product/buy", isAuthenticated, async (req, res) => {
       })
     )
   );
+  channel.consume("PRODUCT", data => {
+    console.log("consuming product");
+    order = JSON.parse(data.content);
+  });
+
+  return res.json(order)
 });
 
 app.listen(5001, () => {
