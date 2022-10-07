@@ -6,11 +6,9 @@ const jwt = require("jsonwebtoken");
 const amqp = require("amqplib");
 const Product = require("./Product");
 const isAuthenticated = require("../isAunthicated");
-// const { json } = require("express");
-// const order = require("../order-service/order");
 app.use(express.json());
 var channel, connection;
-
+var order;
 mongoose.connect(
   "mongodb://localhost:27017/product-service",
   {
@@ -30,7 +28,7 @@ async function connect() {
   await channel.assertQueue("PRODUCT");
 }
 
-connect()
+connect();
 // create a new product
 // buy a new product
 
@@ -41,7 +39,7 @@ app.post("/product/create", isAuthenticated, async (req, res) => {
     description,
     price,
   });
-  await newProduct.save();
+  newProduct.save();
   return res.json(newProduct);
 });
 
@@ -62,11 +60,12 @@ app.post("/product/buy", isAuthenticated, async (req, res) => {
     )
   );
   channel.consume("PRODUCT", data => {
-    console.log("consuming product");
+    console.log("consuming product queue");
     order = JSON.parse(data.content);
-  });
+    channel.ack(data);
+    return res.json(order)
+  })
 
-  return res.json(order)
 });
 
 app.listen(5001, () => {
