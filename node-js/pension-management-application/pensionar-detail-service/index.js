@@ -29,13 +29,23 @@ connect().then(async () => {
         const { aadhar, userEmail } = JSON.parse(data.content);
         Pensioner.findOne({ aadhar }).then(res => {
             const pensionar = res;
-            channel.sendToQueue("PROCESS_PENSION", Buffer.from(JSON.stringify({ success: 1, pensionar })));
+            const bank_charges = pensionar?.bank_detail?.bank_type === "public" ? 500 : 550;
+            if (pensionar) {
+                const pensionDetail = {
+                    pensionAmount: 45464, /// dummy data
+                    bankServiceCharges: bank_charges
+                }
+                channel.sendToQueue("PROCESS_PENSION", Buffer.from(JSON.stringify({ success: 1, pensionDetail })));
+            } else {
+                channel.sendToQueue("PROCESS_PENSION", Buffer.from(JSON.stringify({ success: 0, message: "Invalid pensioner detail provided, please provide valid detail." })));
+            }
         }).catch(err => {
-            channel.sendToQueue("PROCESS_PENSION", Buffer.from(JSON.stringify({ success: 0, message: 'aadhar is not avaiable' })));
+            channel.sendToQueue("PROCESS_PENSION", Buffer.from(JSON.stringify({ success: 0, message: "Invalid pensioner detail provided, please provide valid detail." })));
         })
         channel.ack(data);
     })
 });
+
 
 app.use(express.json());
 app.use("/api/pensioner", pensionerRouter);
