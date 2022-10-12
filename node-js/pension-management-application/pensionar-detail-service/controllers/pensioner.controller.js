@@ -1,8 +1,6 @@
 const Pensioner = require("../models/pensioner");
 const createPensioner = async (req, res) => {
 
-    console.log(req.body);
-
     const {
         name,
         dob,
