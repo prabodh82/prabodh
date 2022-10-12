@@ -3,6 +3,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const pensionerRouter = require("./routes/pensioner");
 const amqp = require("amqplib");
+const Pensioner = require("./models/pensioner");
 
 const PORT = process.env.PORT || 5002;
 const app = express();
@@ -22,6 +23,19 @@ async function connect() {
     channel = await connection.createChannel();
     await channel.assertQueue("PENSIONER_DETAIL");
 }
+
+connect().then(async () => {
+    channel.consume("PENSIONER_DETAIL", data => {
+        const { aadhar, userEmail } = JSON.parse(data.content);
+        Pensioner.findOne({ aadhar }).then(res => {
+            const pensionar = res;
+            channel.sendToQueue("PROCESS_PENSION", Buffer.from(JSON.stringify({ success: 1, pensionar })));
+        }).catch(err => {
+            channel.sendToQueue("PROCESS_PENSION", Buffer.from(JSON.stringify({ success: 0, message: 'aadhar is not avaiable' })));
+        })
+        channel.ack(data);
+    })
+});
 
 app.use(express.json());
 app.use("/api/pensioner", pensionerRouter);
