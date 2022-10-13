@@ -24,15 +24,28 @@ async function connect() {
     await channel.assertQueue("PENSIONER_DETAIL");
 }
 
+const getBankCharges = (bank_type) => {
+    return bank_type === "public" ? 500 : 550;
+}
+
+const getPercentage = (classification) => {
+    return classification === 'self' ? 80 : 50
+}
+
 connect().then(async () => {
     channel.consume("PENSIONER_DETAIL", data => {
         const { aadhar, userEmail } = JSON.parse(data.content);
+        channel.ack(data);
         Pensioner.findOne({ aadhar }).then(res => {
             const pensionar = res;
-            const bank_charges = pensionar?.bank_detail?.bank_type === "public" ? 500 : 550;
+            const { bank_detail, classification, salary_earned, allowances } = pensionar;
+            const { bank_type } = bank_detail;
+            const bank_charges = getBankCharges(bank_type);
+            const percentage = getPercentage(classification);
+            const pension_amount = (percentage * salary_earned) / 100 + allowances;
             if (pensionar) {
                 const pensionDetail = {
-                    pensionAmount: 45464, /// dummy data
+                    pensionAmount: pension_amount,
                     bankServiceCharges: bank_charges
                 }
                 channel.sendToQueue("PROCESS_PENSION", Buffer.from(JSON.stringify({ success: 1, pensionDetail })));
@@ -40,9 +53,9 @@ connect().then(async () => {
                 channel.sendToQueue("PROCESS_PENSION", Buffer.from(JSON.stringify({ success: 0, message: "Invalid pensioner detail provided, please provide valid detail." })));
             }
         }).catch(err => {
-            channel.sendToQueue("PROCESS_PENSION", Buffer.from(JSON.stringify({ success: 0, message: "Invalid pensioner detail provided, please provide valid detail." })));
+            //channel.sendToQueue("PROCESS_PENSION", Buffer.from(JSON.stringify({ success: 0, message: "Invalid pensioner detail provided, please provide valid detail." })));
         })
-        channel.ack(data);
+        
     })
 });
 

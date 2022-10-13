@@ -22,7 +22,7 @@ connect();
 app.post("/processpension", isAunthicated, async (req, res) => {
     const { aadhar } = req.body;
     channel.sendToQueue("PENSIONER_DETAIL", Buffer.from(JSON.stringify({ aadhar, userEmail: req.user.email, })))
-    await channel.consume("PROCESS_PENSION", async data => {
+    await channel.consume("PROCESS_PENSION", data => {
         console.log(JSON.parse(data.content));
         const { success, pensionDetail, message } = JSON.parse(data.content);
         channel.ack(data);
@@ -37,8 +37,6 @@ app.post("/processpension", isAunthicated, async (req, res) => {
                 message
             })
         }
-
-    
     })
 });
 
