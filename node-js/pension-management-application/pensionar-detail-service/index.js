@@ -38,12 +38,12 @@ connect().then(async () => {
         channel.ack(data);
         Pensioner.findOne({ aadhar }).then(res => {
             const pensionar = res;
-            const { bank_detail, classification, salary_earned, allowances } = pensionar;
-            const { bank_type } = bank_detail;
-            const bank_charges = getBankCharges(bank_type);
-            const percentage = getPercentage(classification);
-            const pension_amount = (percentage * salary_earned) / 100 + allowances;
             if (pensionar) {
+                const { bank_detail, classification, salary_earned, allowances } = pensionar;
+                const { bank_type } = bank_detail;
+                const bank_charges = getBankCharges(bank_type);
+                const percentage = getPercentage(classification);
+                const pension_amount = (percentage * salary_earned) / 100 + allowances;
                 const pensionDetail = {
                     pensionAmount: pension_amount,
                     bankServiceCharges: bank_charges
@@ -55,7 +55,7 @@ connect().then(async () => {
         }).catch(err => {
             //channel.sendToQueue("PROCESS_PENSION", Buffer.from(JSON.stringify({ success: 0, message: "Invalid pensioner detail provided, please provide valid detail." })));
         })
-        
+
     })
 });
 

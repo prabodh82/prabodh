@@ -6,6 +6,7 @@ const isAunthicated = require("../isAunthicated");
 const app = express();
 const PORT = process.env.PORT || 5001;
 var channel, connection;
+var pension_data;
 
 app.use(express.json());
 
@@ -23,20 +24,9 @@ app.post("/processpension", isAunthicated, async (req, res) => {
     const { aadhar } = req.body;
     channel.sendToQueue("PENSIONER_DETAIL", Buffer.from(JSON.stringify({ aadhar, userEmail: req.user.email, })))
     await channel.consume("PROCESS_PENSION", data => {
-        console.log(JSON.parse(data.content));
-        const { success, pensionDetail, message } = JSON.parse(data.content);
+        pension_data = JSON.parse(data.content);
         channel.ack(data);
-        if (success && pensionDetail) {
-            res.json({
-                success: 1,
-                data: pensionDetail
-            })
-        } else {
-            res.json({
-                success: 0,
-                message
-            })
-        }
+        res.json(pension_data);
     })
 });
 
