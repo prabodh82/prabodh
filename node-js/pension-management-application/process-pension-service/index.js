@@ -20,14 +20,26 @@ async function connect() {
 
 connect();
 
-app.post("/processpension", isAunthicated, async (req, res) => {
+app.post("/processpension", isAunthicated, (req, res) => {
     const { aadhar } = req.body;
-    channel.sendToQueue("PENSIONER_DETAIL", Buffer.from(JSON.stringify({ aadhar, userEmail: req.user.email, })))
-    await channel.consume("PROCESS_PENSION", data => {
-        pension_data = JSON.parse(data.content);
-        channel.ack(data);
-        res.json(pension_data);
-    })
+    if (aadhar) {
+        channel.sendToQueue("PENSIONER_DETAIL", Buffer.from(JSON.stringify({ aadhar, userEmail: req.user.email, })))
+        channel.consume("PROCESS_PENSION", data => {
+            pension_data = JSON.parse(data.content);
+            console.log(pension_data);
+            channel.ack(data);
+            try {
+                if (!res.headersSent)
+                    // console.log("res.headersSent", );
+                    return res.status(200).json(pension_data).end();
+                else {
+                    return res.status(400).json("test")
+                }
+            } catch (err) {
+                return res.status(400).send(err).end();
+            }
+        })
+    }
 });
 
 app.listen(PORT, () => {

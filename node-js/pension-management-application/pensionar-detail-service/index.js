@@ -33,7 +33,7 @@ const getPercentage = (classification) => {
 }
 
 connect().then(async () => {
-    channel.consume("PENSIONER_DETAIL", data => {
+    await channel.consume("PENSIONER_DETAIL", data => {
         const { aadhar, userEmail } = JSON.parse(data.content);
         channel.ack(data);
         Pensioner.findOne({ aadhar }).then(res => {
