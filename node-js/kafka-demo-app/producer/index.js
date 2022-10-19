@@ -11,8 +11,12 @@ const stream = Kafka.createWriteStream(
 
 
 function queueMessage() {
-    const result = stream.write(Buffer.from("Hey my name is prabodh"))
-    console.log(result);
+    const sucess = stream.write(Buffer.from("Hey my name is prabodh"));
+    if(sucess){
+      console.log("message published successfully to stream");
+    }else{
+      console.log("something went wrong");
+    }
 }
 setInterval(()=>{
     queueMessage();
