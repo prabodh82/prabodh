@@ -18,17 +18,10 @@ async function connect() {
 
 connect();
 
-app.get("/send", async (req, res) => {
-    const fakeData = {
-        name: "Prabodh",
-        company: "TCS"
-    }
-    await channel.sendToQueue("Rabbit", Buffer.from(JSON.stringify(fakeData)));
-    await channel.close();
-    await connection.close();
-    return res.send("done");
+app.get("/send", (req, res) => {
+
 })
 
-app.listen(5000, () => {
+app.listen(5002, () => {
     console.log(`server is running at port 5000`);
 })
