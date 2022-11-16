@@ -1,4 +1,4 @@
-<!-- <h2>{{title}}</h2> -->
+<h2>{{title}}</h2>
 <div class="input-group mb-3">
     <span class="input-group-text" id="inputGroup-sizing-default">Name</span>
     <input type="text" [(ngModel)]="name" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
@@ -11,13 +11,13 @@
 <br/>
 <h5 style="margin: 15px;">Gender</h5> 
 <div style="margin: 15px;" class="form-check">
-    <input class="form-check-input" [(ngModel)]="gender" type="checkbox" value="Male" id="flexCheckDefault">
+    <input class="form-check-input" [(ngModel)]="gender" type="radio" value="Male" id="flexCheckDefault">
     <label class="form-check-label" for="flexCheckDefault">
       Male
     </label>
   </div>
   <div style="margin: 15px;" class="form-check">
-    <input class="form-check-input" [(ngModel)]="gender" type="checkbox" value="Female" id="flexCheckChecked">
+    <input class="form-check-input" [(ngModel)]="gender" type="radio" value="Female" id="flexCheckChecked">
     <label class="form-check-label" for="flexCheckChecked">
       Female
     </label>
