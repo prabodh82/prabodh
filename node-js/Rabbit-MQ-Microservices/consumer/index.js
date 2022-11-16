@@ -11,6 +11,9 @@ async function connect() {
         connection = await amqp.connect(amqpServer);
         channel = await connection.createChannel();
         await channel.assertQueue("Rabbit");
+        channel.consume("Rabbit", data => {
+            console.log(`received the data from producer : ${Buffer.from(data.content)}`);
+        })
     } catch (err) {
         console.log(err);
     }
@@ -18,10 +21,10 @@ async function connect() {
 
 connect();
 
-app.get("/send", (req, res) => {
+// app.get("/send", (req, res) => {
 
-})
+// })
 
 app.listen(5002, () => {
-    console.log(`server is running at port 5000`);
+    console.log(`server is running at port 5002`);
 })
