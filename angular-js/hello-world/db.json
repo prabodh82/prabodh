@@ -11,6 +11,12 @@
       "age": "34",
       "gender": "Male",
       "id": 2
+    },
+    {
+      "name": "Mahesh",
+      "age": "27",
+      "gender": "Male",
+      "id": 3
     }
   ]
 }

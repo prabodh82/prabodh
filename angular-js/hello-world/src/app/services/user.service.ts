@@ -10,11 +10,16 @@ export class UserService {
 
   constructor(private http: HttpClient) { }
 
-  saveuser(user : {name  :String, age: number, gender : String}){
+  saveuser(user: { name: String, age: number, gender: String }) {
     return this.http.post(BASE_URL, user)
   }
 
-  getUsers(){
+  getUsers() {
     return this.http.get(BASE_URL);
   }
+
+  deleteUser(user) {
+    return this.http.delete(BASE_URL + "/" + user.id)
+  }
+
 }
