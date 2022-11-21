@@ -13,4 +13,8 @@ export class UserService {
   saveuser(user : {name  :String, age: number, gender : String}){
     return this.http.post(BASE_URL, user)
   }
+
+  getUsers(){
+    return this.http.get(BASE_URL);
+  }
 }

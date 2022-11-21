@@ -8,13 +8,15 @@ import { UserFormComponent } from './components/user-form/user-form.component';
 import { HomeComponent } from './components/home/home.component';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
+import { RegisteredUsersComponent } from './components/registered-users/registered-users.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     NavbarComponent,
     UserFormComponent,
-    HomeComponent
+    HomeComponent,
+    RegisteredUsersComponent
   ],
   imports: [
     BrowserModule,
