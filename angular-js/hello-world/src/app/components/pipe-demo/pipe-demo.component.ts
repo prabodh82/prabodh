@@ -19,6 +19,7 @@ export class PipeDemoComponent implements OnInit {
 
   ngOnInit(): void {
     
+    
   }
 
 }
